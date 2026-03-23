@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chef's Ledger | Kitchen Inventory App</title>
+  <meta
+    name="description"
+    content="Chef's Ledger is a free iPhone app for kitchen inventory, shopping lists, receipt scanning, expense tracking, low stock alerts, expiration reminders, and iCloud sync."
+  />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --line: rgba(255, 255, 255, 0.08);
+      --brand: #f97316;
+      --brand-dark: #ea580c;
+      --accent: #22c55e;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius: 18px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(15, 23, 42, 0.78);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), #fb923c);
+      color: white;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .hero {
+      padding: 88px 0 60px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      background: rgba(249, 115, 22, 0.12);
+      color: #fdba74;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 5vw, 4.6rem);
+      line-height: 1.03;
+      letter-spacing: -1.8px;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .hero-stats div {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+    }
+
+    .hero-stats strong {
+      color: white;
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .hero-card,
+    .feature-card,
+    .support-card,
+    .privacy-card,
+    .faq-item,
+    .cta-box,
+    .showcase-card,
+    .review-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .dashboard {
+      background: linear-gradient(180deg, #111827, #0b1220);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .dashboard-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #86efac;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .dashboard-grid,
+    .feature-grid,
+    .support-grid,
+    .faq-grid,
+    .review-grid,
+    .privacy-grid,
+    .showcase {
+      display: grid;
+      gap: 20px;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .feature-grid,
+    .support-grid,
+    .review-grid,
+    .privacy-grid,
+    .faq-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .showcase {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .metric {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .metric-label,
+    .feature-card p,
+    .support-card p,
+    .privacy-card p,
+    .faq-item p,
+    .review-card p,
+    .showcase-card p,
+    .section-head p,
+    .cta-box p,
+    .support-list li,
+    .privacy-list li,
+    .feature-list li {
+      color: var(--muted);
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .metric-note {
+      font-size: 0.9rem;
+      color: #86efac;
+    }
+
+    section {
+      padding: 42px 0;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 28px;
+    }
+
+    .section-head span {
+      color: #fdba74;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 1.08;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(249, 115, 22, 0.12);
+      color: #fdba74;
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+
+    .feature-list,
+    .support-list,
+    .privacy-list {
+      list-style: none;
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .feature-list li,
+    .support-list li,
+    .privacy-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .check {
+      color: #86efac;
+      font-weight: 900;
+      margin-top: 1px;
+    }
+
+    .mini-ui {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .mini-row strong,
+    .review-card strong {
+      color: white;
+    }
+
+    .review-meta {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .privacy-card h3,
+    .support-card h3,
+    .faq-item h3,
+    .review-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .cta-box {
+      padding: 34px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(249, 115, 22, 0.16), rgba(255, 255, 255, 0.04));
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    code.inline {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #fdba74;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .feature-grid,
+      .support-grid,
+      .privacy-grid,
+      .faq-grid,
+      .review-grid,
+      .showcase {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding-top: 64px;
+      }
+
+      .dashboard-grid,
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-box {
+        padding: 26px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="#top" class="brand">
+        <div class="brand-mark">CL</div>
+        <span>Chef's Ledger</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#support">Support</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <a class="btn btn-primary" href="https://apps.apple.com/us/app/chefs-ledger/id6753956689" target="_blank" rel="noopener noreferrer">Download</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Free on the App Store. Built for iPhone.</div>
+          <h1>Keep your kitchen inventory, shopping lists, and receipts in one place.</h1>
+          <p>
+            Chef's Ledger helps you track food items and expiration dates, build shopping lists,
+            scan receipts, follow expenses and usage, get low stock alerts, and keep data synced across iPhones.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://apps.apple.com/us/app/chefs-ledger/id6753956689" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
+            <a class="btn btn-secondary" href="#support">Get Support</a>
+          </div>
+
+          <div class="hero-stats">
+            <div>
+              <strong>Inventory</strong>
+              Track items, stock levels, and expiration dates.
+            </div>
+            <div>
+              <strong>Shopping</strong>
+              Build lists and check off items at the store.
+            </div>
+            <div>
+              <strong>Receipts</strong>
+              Scan receipts and keep expense records organized.
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="dashboard">
+            <div class="dashboard-top">
+              <span>Chef's Ledger</span>
+              <span class="pill">Free</span>
+            </div>
+            <div class="dashboard-grid">
+              <div class="metric">
+                <div class="metric-label">Inventory</div>
+                <div class="metric-value">Pantry</div>
+                <div class="metric-note">See stock and expiration dates.</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Shopping Lists</div>
+                <div class="metric-value">Ready</div>
+                <div class="metric-note">Stay organized in store.</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Receipt Scans</div>
+                <div class="metric-value">Fast</div>
+                <div class="metric-note">Save records as PDF files.</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Sync</div>
+                <div class="metric-value">iCloud</div>
+                <div class="metric-note">Across your iPhones.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <span>Features</span>
+          <h2>Built to reduce waste and keep your kitchen organized.</h2>
+          <p>
+            Chef's Ledger is listed on the App Store as a free iPhone app focused on kitchen inventory,
+            shopping lists, expense tracking, receipt scanning, low stock alerts, expiration reminders, and iCloud sync.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon">1</div>
+            <h3>Smart inventory</h3>
+            <p>Track food items with categories, stock levels, and expiration dates.</p>
+            <ul class="feature-list">
+              <li><span class="check">✓</span><span>Pantry and kitchen item tracking</span></li>
+              <li><span class="check">✓</span><span>Expiration date reminders</span></li>
+              <li><span class="check">✓</span><span>Low stock alerts</span></li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">2</div>
+            <h3>Shopping and spending</h3>
+            <p>Create lists, check off items, and monitor grocery spending over time.</p>
+            <ul class="feature-list">
+              <li><span class="check">✓</span><span>Shopping list organization</span></li>
+              <li><span class="check">✓</span><span>Expense tracking</span></li>
+              <li><span class="check">✓</span><span>Usage insights</span></li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">3</div>
+            <h3>Receipt scans and sync</h3>
+            <p>Scan receipts in seconds and keep your data synced across iPhones with iCloud.</p>
+            <ul class="feature-list">
+              <li><span class="check">✓</span><span>Receipt scanner</span></li>
+              <li><span class="check">✓</span><span>PDF receipt saving</span></li>
+              <li><span class="check">✓</span><span>Automatic iCloud sync</span></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <span>How people use it</span>
+          <h2>Made for home cooks, families, meal planners, roommates, and chefs.</h2>
+          <p>Chef's Ledger is positioned on the App Store for people who want tighter control over food, budget, and waste.</p>
+        </div>
+
+        <div class="showcase">
+          <article class="showcase-card">
+            <h3>Track what you have</h3>
+            <p>Add items, organize categories, and keep expiration dates easy to see.</p>
+            <div class="mini-ui">
+              <div class="mini-row"><span>Milk</span><strong>Expires in 2 days</strong></div>
+              <div class="mini-row"><span>Eggs</span><strong>Low stock</strong></div>
+              <div class="mini-row"><span>Rice</span><strong>In pantry</strong></div>
+            </div>
+          </article>
+
+          <article class="showcase-card">
+            <h3>Shop and monitor spending</h3>
+            <p>Build a list, shop faster, scan the receipt, and keep a simple expense record.</p>
+            <div class="mini-ui">
+              <div class="mini-row"><span>Shopping list</span><strong>Ready</strong></div>
+              <div class="mini-row"><span>Receipt scan</span><strong>Saved</strong></div>
+              <div class="mini-row"><span>Expense view</span><strong>Budget tracked</strong></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <span>App Store reviews</span>
+          <h2>Early users call out waste reduction and savings.</h2>
+          <p>The App Store page currently shows a 5.0 rating from 3 ratings, with review text about preventing grocery waste, maintaining budget, useful features, and saving money.</p>
+        </div>
+
+        <div class="review-grid">
+          <article class="review-card">
+            <h3>Useful features</h3>
+            <p>“Very useful features”</p>
+            <div class="review-meta"><strong>KidFury5 loves omlet arcade</strong><br />November 11, 2025</div>
+          </article>
+          <article class="review-card">
+            <h3>Waste and budget</h3>
+            <p>“Helps me to prevent the grocery waste and maintain my budget”</p>
+            <div class="review-meta"><strong>Sweetnanu</strong><br />November 12, 2025</div>
+          </article>
+          <article class="review-card">
+            <h3>Money saved</h3>
+            <p>“So far saved 20.51 dollars! Amazing app”</p>
+            <div class="review-meta"><strong>James Barnes1</strong><br />December 1, 2025</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="support">
+      <div class="container">
+        <div class="section-head">
+          <span>Support</span>
+          <h2>Need help with Chef's Ledger?</h2>
+          <p>Use the support section for setup questions, sync issues, receipt scanning problems, or privacy requests.</p>
+        </div>
+
+        <div class="support-grid">
+          <article class="support-card">
+            <h3>Contact support</h3>
+            <p>Email support for help with the app, bug reports, or account and privacy questions.</p>
+            <ul class="support-list">
+              <li><span class="check">✓</span><span>Email: chefsledgercontact@gmail.com</span></li>
+              <li><span class="check">✓</span><span>App: Chef's Ledger</span></li>
+              <li><span class="check">✓</span><span>Reply target: within 48 hours</span></li>
+            </ul>
+          </article>
+
+          <article class="support-card">
+            <h3>Common help topics</h3>
+            <p>Start here if you need fast answers.</p>
+            <ul class="support-list">
+              <li><span class="check">✓</span><span>How to manage inventory items</span></li>
+              <li><span class="check">✓</span><span>How to scan and save receipts</span></li>
+              <li><span class="check">✓</span><span>How to enable or disable iCloud sync</span></li>
+            </ul>
+          </article>
+
+          <article class="support-card">
+            <h3>Privacy requests</h3>
+            <p>You control your data. You can edit, export, or delete it, and you can disable optional permissions in iOS Settings.</p>
+            <ul class="support-list">
+              <li><span class="check">✓</span><span>Delete items or groups in the app</span></li>
+              <li><span class="check">✓</span><span>Export data before deletion</span></li>
+              <li><span class="check">✓</span><span>Delete iCloud data separately</span></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy">
+      <div class="container">
+        <div class="section-head">
+          <span>Privacy Policy</span>
+          <h2>Simple privacy summary for Chef's Ledger.</h2>
+          <p>The full policy below is written for a GitHub Pages support site and matches your uploaded privacy notes.</p>
+        </div>
+
+        <div class="privacy-grid">
+          <article class="privacy-card">
+            <h3>What the app stores</h3>
+            <p>Chef's Ledger stores the data you enter, such as inventory items, quantities, prices, categories, expiration dates, shopping lists, expenses, usage records, optional profile settings, and receipt data.</p>
+            <ul class="privacy-list">
+              <li><span class="check">✓</span><span>Inventory and shopping list data</span></li>
+              <li><span class="check">✓</span><span>Expense and usage records</span></li>
+              <li><span class="check">✓</span><span>Receipt images processed locally</span></li>
+            </ul>
+          </article>
+
+          <article class="privacy-card">
+            <h3>What the app does not do</h3>
+            <p>Chef's Ledger does not sell your data, use it for advertising, track you across apps or websites, or send it to analytics providers.</p>
+            <ul class="privacy-list">
+              <li><span class="check">✓</span><span>No analytics or ad tracking</span></li>
+              <li><span class="check">✓</span><span>No advertising identifiers</span></li>
+              <li><span class="check">✓</span><span>No AI training on your data</span></li>
+            </ul>
+          </article>
+
+          <article class="privacy-card">
+            <h3>Where the data lives</h3>
+            <p>Your data is stored on your device. If you enable iCloud sync, it can also sync to your personal iCloud account. The app does not run backend servers that store your general app data.</p>
+            <ul class="privacy-list">
+              <li><span class="check">✓</span><span>Primary storage on your device</span></li>
+              <li><span class="check">✓</span><span>Optional iCloud sync</span></li>
+              <li><span class="check">✓</span><span>No general data storage servers</span></li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="privacy-card" style="margin-top:20px;">
+          <h3>Full Privacy Policy</h3>
+          <p class="small">Effective date: November 3, 2025<br />Last updated: November 3, 2025</p>
+          <br />
+          <p>Chef's Ledger respects your privacy. This Privacy Policy explains what information the app handles, how that information is used, how data is stored, and what choices you have.</p>
+          <br />
+          <p><strong>1. Information you provide</strong><br />Chef's Ledger stores information you choose to enter into the app, such as inventory data, shopping list data, expense and usage data, group and shared inventory data, optional profile data, notification preferences, and receipt data.</p>
+          <br />
+          <p><strong>2. Optional device permissions</strong><br />If you use store search or time-zone related features, the app may use location services. If you use receipt scanning, the app may use camera access. If you enable alerts, the app may use notifications. You can disable these permissions in iOS Settings.</p>
+          <br />
+          <p><strong>3. Third-party services</strong><br />Chef's Ledger uses Apple iCloud and CloudKit for optional sync. If you use location-based features, the app may use Google Maps Time Zone API or Google Places API to support those features.</p>
+          <br />
+          <p><strong>4. What Chef's Ledger does not collect for tracking</strong><br />Chef's Ledger does not collect analytics data, advertising identifiers, browsing history, biometric data, crash reports, or similar tracking data for marketing purposes. The app does not track you across other apps or websites.</p>
+          <br />
+          <p><strong>5. How your information is used</strong><br />Your information is used only to provide app functionality, including managing inventory, tracking expiration dates and stock levels, creating shopping lists, recording expenses and usage, scanning receipts, sending reminders you enable, supporting shared data, and syncing through iCloud if you choose that feature.</p>
+          <br />
+          <p><strong>6. Data storage</strong><br />Your data is stored primarily on your device. If you enable iCloud sync, your data may also be stored in your personal iCloud account. Based on your privacy notes, Chef's Ledger does not operate backend servers for general app data storage.</p>
+          <br />
+          <p><strong>7. Data sharing</strong><br />Chef's Ledger does not sell, rent, or trade your personal information. Data is shared only in limited cases, such as optional iCloud sync, optional location-based lookups, or when required by law.</p>
+          <br />
+          <p><strong>8. Data retention and control</strong><br />Your data stays on your device until you delete it or remove the app. If you use iCloud sync, synced data may remain in iCloud until you delete it there. You can edit, export, or delete your data and can disable optional permissions at any time.</p>
+          <br />
+          <p><strong>9. Children's privacy</strong><br />Chef's Ledger is not intended for children under 13. The app does not knowingly collect personal information from children under 13.</p>
+          <br />
+          <p><strong>10. Security</strong><br />Chef's Ledger relies on iOS security features, app sandboxing, local storage protections, and Apple protections for iCloud sync. No storage or transmission method is fully secure, but the app is designed to minimize exposure by keeping core data on your device or in your own iCloud account.</p>
+          <br />
+          <p><strong>11. Changes to this policy</strong><br />Chef's Ledger may update this Privacy Policy from time to time. When that happens, the updated date at the top of the policy will change.</p>
+          <br />
+          <p><strong>12. Contact</strong><br />Email: chefsledgercontact@gmail.com</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <div class="section-head">
+          <span>FAQ</span>
+          <h2>Quick answers</h2>
+          <p>Use these to reduce support emails and help visitors understand the app faster.</p>
+        </div>
+
+        <div class="faq-grid">
+          <article class="faq-item">
+            <h3>Is Chef's Ledger free?</h3>
+            <p>Yes. The App Store page lists Chef's Ledger as free and designed for iPhone.</p>
+          </article>
+          <article class="faq-item">
+            <h3>Who is the app for?</h3>
+            <p>Home cooks, professional chefs, families, budget-conscious shoppers, meal planners, and roommates.</p>
+          </article>
+          <article class="faq-item">
+            <h3>Does the app track me?</h3>
+            <p>No. Your privacy notes state that the app does not collect analytics or tracking data and does not sell your information.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta-box">
+          <h2>Download Chef's Ledger on iPhone.</h2>
+          <p>Track food items, reduce waste, scan receipts, and keep your kitchen organized.</p>
+          <div class="hero-actions" style="justify-content:center; margin-bottom:0;">
+            <a class="btn btn-primary" href="https://apps.apple.com/us/app/chefs-ledger/id6753956689" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
+            <a class="btn btn-secondary" href="mailto:chefsledgercontact@gmail.com">Email Support</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>© 2026 Chef's Ledger</div>
+      <div>Free iPhone app for kitchen inventory and shopping</div>
+    </div>
+  </footer>
+</body>
+</html>
